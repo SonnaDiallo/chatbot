@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatBot IA pour l'Orientation en E-Learning</title>
+    <link rel="stylesheet" href="Ai-connexion.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Écran d'accueil initial -->
+        <div id="landing-screen">
+            <h1>ChatBot IA pour l'Orientation en E-Learning</h1>
+            <p class="greeting">Bonjour, que souhaitez-vous apprendre ?</p>
+            <div class="input-container">
+                <input type="text" placeholder="Entrez un sujet..." id="subject-input">
+                <button id="send-btn">Envoyer</button>
+            </div>
+            <p class="info">L'IA analysera vos besoins et vous recommandera des cours adaptés.</p>
+            <div class="chatbot-container">
+                <div class="speech-bubble" id="speech-bubble">Bonjour</div>
+                <img src="images/ai-logo2.png" alt="Robot IA" class="robot" id="robot">
+            </div>
+            
+            <!-- Bouton de connexion uniquement sur la page d'accueil -->
+            <div class="login-button-container" id="home-login-container">
+                <button class="login-button" id="login-button">
+                    <span class="login-icon"></span>
+                    Connexion
+                </button>
+            </div>
+        </div>
+        
+        <!-- Écran de chargement -->
+        <div id="loading-screen" class="loading-screen">
+            <h2 class="loading-title">Analyse en cours...</h2>
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-bar">0%</div>
+            </div>
+            <p class="loading-message" id="loading-message">Initialisation de l'analyse...</p>
+        </div>
+        
+        <!-- Interface de chat -->
+        <div id="chat-interface" class="chat-interface">
+            <div class="chat-header">
+                <img src="images/ai-logo2.png" alt="FormationBot" class="bot-avatar">
+                <div class="bot-info">
+                    <div class="bot-name">FormationBot</div>
+                    <div class="bot-status">Votre assistant d'orientation</div>
+                </div>
+                <div class="header-actions">
+                    <a href="#" id="mon-profil">Mon Profil</a>
+                    <a href="#" id="mes-discussions">Mes Discussions</a>
+                    <button class="header-login-button" id="header-login-button">
+                        <span class="header-login-icon"></span>
+                        <span id="header-login-text">Connexion</span>
+                    </button>
+                </div>
+                
+                <!-- Menu déroulant des discussions -->
+                <div class="discussions-dropdown" id="discussions-dropdown">
+                    <div class="discussions-header">
+                        <h3>Historique des discussions</h3>
+                        <button class="discussions-new-btn" id="discussions-new-btn">Nouvelle discussion</button>
+                    </div>
+                    <div class="discussions-list" id="discussions-list">
+                        <!-- Les discussions seront ajoutées ici dynamiquement -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="chat-messages" id="chat-messages">
+                <div class="message bot-message">
+                    Bonjour ! Je suis FormationBot, votre assistant d'orientation. Je peux vous aider à trouver les modules de formation adaptés à vos besoins. Quels sont vos objectifs d'apprentissage ?
+                </div>
+                <!-- Les messages seront ajoutés ici dynamiquement -->
+            </div>
+            
+            <div class="chat-input-container">
+                <input type="text" placeholder="Posez votre question ici..." class="chat-input" id="chat-input">
+                <button class="send-button" id="chat-send-btn">
+                    <div class="send-arrow"></div>
+                </button>
+            </div>
+            
+            <div class="quick-questions">
+                <div class="quick-question">Quels modules pour devenir développeur ?</div>
+                <div class="quick-question">Formations en cybersécurité</div>
+                <div class="quick-question">Modules pour débutants</div>
+                <div class="quick-question">Durée des formations</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Profile overlay -->
+    <div class="profile-overlay" id="profile-overlay">
+        <div class="profile-card">
+            <div class="profile-header">
+                <div class="profile-avatar" id="profile-avatar">U</div>
+                <div>
+                    <h3 class="profile-title" id="profile-name">Utilisateur</h3>
+                    <p class="profile-subtitle" id="profile-email">utilisateur@example.com</p>
+                </div>
+            </div>
+            
+            <div class="close-profile" id="close-profile">
+                <div class="close-icon"></div>
+            </div>
+            
+            <div class="profile-info">
+                <div class="profile-info-row">
+                    <div class="profile-info-label">Nom complet:</div>
+                    <div class="profile-info-value" id="profile-fullname">-</div>
+                </div>
+                
+                <div class="profile-info-row">
+                    <div class="profile-info-label">Date de naissance:</div>
+                    <div class="profile-info-value" id="profile-birthdate">-</div>
+                </div>
+                
+                <div class="profile-info-row">
+                    <div class="profile-info-label">Email:</div>
+                    <div class="profile-info-value" id="profile-email-info">-</div>
+                </div>
+                
+                <div class="profile-info-row">
+                    <div class="profile-info-label">Inscrit depuis:</div>
+                    <div class="profile-info-value" id="profile-registered">-</div>
+                </div>
+            </div>
+            
+            <div class="profile-actions">
+                <button class="profile-action-btn logout-btn" id="logout-btn">Se déconnecter</button>
+                <button class="profile-action-btn edit-profile-btn">Modifier le profil</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Script JavaScript connecté au backend pour votre chatbot
+// Script JavaScript connecté au backend pour votre chatbot - VERSION AMÉLIORÉE
+class ConnectedChatBot {
+    constructor() {
+        this.userQuestion = "";
+        this.currentConversationId = null;
+        this.messages = [];
+        this.isTyping = false;
+        this.apiBaseUrl = 'http://localhost:5000/api';
+        this.animationInterval = null;
+        this.conversations = []; // Historique des conversations
+        
+        // Salutations en différentes langues
+        this.greetings = [
+            "Bonjour", "Hello", "Hola", "Ciao", "Kon'nichiwa", 
+            "Olá", "Namaste", "Annyeong", "Guten Tag", "Salaam", 
+            "Merhaba", "Sawubona", "Nǐ hǎo", "Zdravstvuyte", "Aloha"
+        ];
+        
+        this.init();
+    }
+
+    //  méthode init() :
+
+    init() {
+    this.checkLoggedIn();
+    this.setupEventListeners();
+    this.startRobotAnimation();
+    this.loadStoredConversationId();
+    
+    // Charger les conversations après connexion
+    setTimeout(() => {
+        this.loadConversationsHistory();
+    }, 1000);
+}
+
+    // ⭐ NOUVELLE MÉTHODE : Charger l'ID de conversation stocké localement
+    loadStoredConversationId() {
+        const stored = localStorage.getItem('currentConversationId');
+        if (stored) {
+            this.currentConversationId = stored;
+            console.log('📁 Conversation ID chargé:', this.currentConversationId);
+        }
+    }
+
+    // ⭐ NOUVELLE MÉTHODE : Sauvegarder l'ID de conversation
+    saveConversationId(conversationId) {
+        this.currentConversationId = conversationId;
+        localStorage.setItem('currentConversationId', conversationId);
+        console.log('💾 Conversation ID sauvegardé:', conversationId);
+    }
+
+    // ⭐ NOUVELLE MÉTHODE : Créer une nouvelle conversation
+    async createNewConversation() {
+        const userId = this.getCurrentUserId();
+        if (!userId) {
+            console.log('👤 Utilisateur non connecté - conversation temporaire');
+            this.currentConversationId = null;
+            localStorage.removeItem('currentConversationId');
+            return;
+        }
+
+        try {
+            console.log('🆕 Création nouvelle conversation...');
+            const response = await fetch(`${this.apiBaseUrl}/conversations`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': this.getAuthHeader()
+                },
+                body: JSON.stringify({
+                    title: this.userQuestion ? 
+                        this.userQuestion.substring(0, 50) + (this.userQuestion.length > 50 ? '...' : '') :
+                        'Nouvelle conversation'
+                })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                this.saveConversationId(data.conversation._id);
+                await this.loadConversationsHistory();
+                console.log('✅ Nouvelle conversation créée:', data.conversation._id);
+            } else {
+                console.error('❌ Erreur création conversation:', response.status);
+            }
+        } catch (error) {
+            console.error('❌ Erreur création conversation:', error);
+        }
+    }
+
+    // ⭐ NOUVELLE MÉTHODE : Charger l'historique des conversations
+    // ⭐ REMPLACEZ cette méthode par :
+async loadConversationsHistory() {
+    const userId = this.getCurrentUserId();
+    console.log('🔍 DEBUG - UserId:', userId);
+    
+    if (!userId) {
+        console.log('❌ Pas d\'utilisateur connecté');
+        return;
+    }
+
+    try {
+        const headers = {
+            'Content-Type': 'application/json',
+            'X-User-ID': userId
+        };
+        
+        const authHeader = this.getAuthHeader();
+        if (authHeader) {
+            headers['Authorization'] = authHeader;
+        }
+        
+        console.log('📡 Headers envoyés:', headers);
+        
+        const response = await fetch(`${this.apiBaseUrl}/conversations`, {
+            method: 'GET',
+            headers: headers
+        });
+
+        console.log('📨 Statut réponse:', response.status);
+
+        if (response.ok) {
+            const data = await response.json();
+            console.log('✅ Conversations reçues:', data.conversations?.length || 0);
+            
+            this.conversations = data.conversations || [];
+            this.updateConversationsDropdown();
+        } else {
+            const errorText = await response.text();
+            console.error('❌ Erreur:', response.status, errorText);
+        }
+    } catch (error) {
+        console.error('❌ Erreur réseau:', error);
+    }
+}
+
+    // ⭐ NOUVELLE MÉTHODE : Mettre à jour le dropdown des conversations
+   updateConversationsDropdown() {
+    const discussionsList = document.getElementById('discussions-list');
+    if (!discussionsList) return;
+
+    discussionsList.innerHTML = '';
+
+    if (this.conversations.length === 0) {
+        discussionsList.innerHTML = '<div class="no-discussions">Aucune conversation</div>';
+        return;
+    }
+
+    this.conversations.forEach(conversation => {
+        const item = document.createElement('div');
+        item.className = 'discussion-item';
+        if (conversation._id === this.currentConversationId) {
+            item.classList.add('active');
+        }
+
+        item.innerHTML = `
+            <div class="discussion-title">${conversation.title}</div>
+            <div class="discussion-date">${new Date(conversation.lastUpdated).toLocaleDateString('fr-FR')}</div>
+            <button class="discussion-delete" onclick="event.stopPropagation(); window.chatBot.deleteConversation('${conversation._id}')">🗑️</button>
+        `;
+
+        // ⭐ IMPORTANT : Ajouter l'événement click
+        item.addEventListener('click', (e) => {
+            if (!e.target.classList.contains('discussion-delete')) {
+                console.log('👆 Click sur conversation:', conversation._id);
+                this.loadConversation(conversation._id);
+            }
+        });
+
+        discussionsList.appendChild(item);
+    });
+}
+
+    // ⭐ NOUVELLE MÉTHODE : Charger une conversation spécifique
+   async loadConversation(conversationId) {
+    try {
+        console.log('📖 Chargement conversation:', conversationId);
+        
+        const userId = this.getCurrentUserId();
+        if (!userId) {
+            alert('Vous devez être connecté');
+            return;
+        }
+
+        // ⭐ AJOUT DE LA PARTIE MANQUANTE
+        const headers = {
+            'Content-Type': 'application/json',
+            'X-User-ID': userId
+        };
+        
+        console.log('📡 Headers:', headers);
+        console.log('🌐 URL:', `${this.apiBaseUrl}/conversations/${conversationId}/messages`);
+        
+        const response = await fetch(`${this.apiBaseUrl}/conversations/${conversationId}/messages`, {
+            method: 'GET',
+            headers: headers
+        });
+
+        console.log('📨 Statut:', response.status);
+
+        if (response.ok) {
+            const data = await response.json();
+            console.log('✅ Messages reçus:', data.messages?.length || 0);
+            
+            // Sauvegarder l'ID de conversation actuelle
+            this.saveConversationId(conversationId);
+            
+            // Vider le chat actuel
+            this.clearChatMessages();
+            this.messages = [];
+            
+            // Afficher les messages
+            if (data.messages && data.messages.length > 0) {
+                data.messages.forEach(message => {
+                    this.addMessage(message.text, message.sender, false);
+                    this.messages.push(message);
+                });
+                console.log('✅ Messages affichés:', data.messages.length);
+            } else {
+                console.log('📝 Aucun message, affichage bienvenue');
+                this.addMessage(this.getWelcomeMessage(), 'bot', false);
+            }
+            
+            // Fermer le dropdown
+            this.hideDiscussionsDropdown();
+            
+            // Mettre à jour l'interface
+            this.updateConversationsDropdown();
+            
+        } else {
+            const errorText = await response.text();
+            console.error('❌ Erreur chargement messages:', response.status, errorText);
+            alert(`Erreur lors du chargement: ${response.status}`);
+        }
+    } catch (error) {
+        console.error('❌ Erreur réseau:', error);
+        alert('Erreur de connexion');
+    }
+}
+
+clearChatMessages() {
+    const chatMessages = document.getElementById('chat-messages');
+    if (chatMessages) {
+        chatMessages.innerHTML = '';
+    }
+}
+
+hideDiscussionsDropdown() {
+    const dropdown = document.getElementById('discussions-dropdown');
+    if (dropdown) {
+        dropdown.style.display = 'none';
+    }
+}
+
+saveConversationId(conversationId) {
+    this.currentConversationId = conversationId;
+    localStorage.setItem('currentConversationId', conversationId);
+    console.log('💾 Conversation ID sauvegardé:', conversationId);
+}
+
+    // ⭐ NOUVELLE MÉTHODE : Supprimer une conversation
+    async deleteConversation(conversationId) {
+    if (!confirm('Êtes-vous sûr de vouloir supprimer cette conversation ?')) {
+        return;
+    }
+
+    try {
+        const userId = this.getCurrentUserId();
+        const headers = {
+            'Content-Type': 'application/json',
+            'X-User-ID': userId
+        };
+        
+        if (this.getAuthHeader()) {
+            headers['Authorization'] = this.getAuthHeader();
+        }
+        
+        const response = await fetch(`${this.apiBaseUrl}/conversations/${conversationId}`, {
+            method: 'DELETE',
+            headers: headers
+        });
+
+        if (response.ok) {
+            // Si c'est la conversation actuelle, la vider
+            if (conversationId === this.currentConversationId) {
+                this.currentConversationId = null;
+                localStorage.removeItem('currentConversationId');
+                this.clearChatMessages();
+                this.messages = [];
+                this.addMessage(this.getWelcomeMessage(), 'bot');
+            }
+            
+            // Recharger l'historique
+            await this.loadConversationsHistory();
+            console.log('✅ Conversation supprimée');
+        } else {
+            alert('Erreur lors de la suppression');
+        }
+    } catch (error) {
+        console.error('❌ Erreur suppression:', error);
+        alert('Erreur de connexion');
+    }
+}
+
+    // ⭐ MÉTHODE AMÉLIORÉE : Envoi vers l'IA avec sauvegarde
+    async sendMessageToAI(message) {
+        this.showTypingIndicator();
+        
+        try {
+            console.log('🤖 Envoi vers l\'IA:', message);
+            
+            // Préparer les headers avec userId si connecté
+            const headers = {
+                'Content-Type': 'application/json'
+            };
+            
+            const userId = this.getCurrentUserId();
+            if (userId) {
+                headers['X-User-ID'] = userId;  
+            }
+            
+            if (this.getAuthHeader()) {
+                headers['Authorization'] = this.getAuthHeader();
+            }
+            
+            // Appel à votre route guest-response avec conversationId
+            const response = await fetch(`${this.apiBaseUrl}/guest-response`, {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify({
+    message: message,
+    conversationHistory: this.messages.slice(-10),
+    conversationId: this.currentConversationId,
+    userId: userId  // ⭐ AJOUTEZ cette ligne
+})
+            });
+
+            console.log('📡 Statut réponse:', response.status);
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error('❌ Erreur API:', errorText);
+                throw new Error(`Erreur API: ${response.status}`);
+            }
+
+            const data = await response.json();
+            console.log('✅ Réponse IA reçue:', data);
+            
+            this.hideTypingIndicator();
+            
+            if (data.text) {
+                this.addMessage(data.text, 'bot');
+                
+                // ⭐ NOUVEAU : Sauvegarder l'ID de conversation retourné
+                if (data.conversationId && data.conversationId !== this.currentConversationId) {
+                    this.saveConversationId(data.conversationId);
+                    await this.loadConversationsHistory();
+                }
+                
+                // Générer des recommandations si nécessaire
+                if (this.shouldGenerateRecommendations(message)) {
+                    await this.fetchRecommendations(message);
+                }
+            } else {
+                throw new Error('Pas de réponse dans les données');
+            }
+            
+        } catch (error) {
+            console.error('❌ Erreur envoi IA:', error);
+            this.hideTypingIndicator();
+            this.generateBotResponseFallback(message);
+        }
+    }
+
+    // Fonction pour vider les messages du chat
+    clearChatMessages() {
+        const chatMessages = document.getElementById('chat-messages');
+        if (chatMessages) {
+            chatMessages.innerHTML = '';
+        }
+    }
+
+    // Fonction pour masquer le dropdown des discussions
+    hideDiscussionsDropdown() {
+        const dropdown = document.getElementById('discussions-dropdown');
+        if (dropdown) {
+            dropdown.style.display = 'none';
+        }
+    }
+
+    // Fonction pour afficher le dropdown des discussions
+    showDiscussionsDropdown() {
+        const dropdown = document.getElementById('discussions-dropdown');
+        if (dropdown) {
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        }
+    }
+
+    // ⭐ MÉTHODE AMÉLIORÉE : Ajouter un message avec option d'animation
+    addMessage(text, sender, animate = true) {
+        const chatMessages = document.getElementById('chat-messages');
+        if (!chatMessages) return;
+
+        const message = {
+            text,
+            sender,
+            timestamp: new Date().toISOString()
+        };
+        
+        this.messages.push(message);
+        
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add('message', `${sender}-message`);
+        
+        if (animate) {
+            // Animation d'apparition
+            messageDiv.style.opacity = '0';
+            messageDiv.style.transform = 'translateY(10px)';
+        }
+        
+        messageDiv.textContent = text;
+        chatMessages.appendChild(messageDiv);
+        
+        if (animate) {
+            // Animation
+            setTimeout(() => {
+                messageDiv.style.transition = 'all 0.3s ease';
+                messageDiv.style.opacity = '1';
+                messageDiv.style.transform = 'translateY(0)';
+            }, 10);
+        }
+        
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    // ⭐ MÉTHODE AMÉLIORÉE : Gestion de la question initiale avec création de conversation
+    async handleInitialQuestion() {
+        const subjectInput = document.getElementById('subject-input');
+        const input = subjectInput?.value.trim();
+        
+        if (!input) {
+            alert('Veuillez entrer un sujet');
+            return;
+        }
+
+        this.userQuestion = input;
+        subjectInput.value = '';
+        
+        // Arrêter l'animation du robot
+        if (this.animationInterval) clearInterval(this.animationInterval);
+        
+        // Créer une nouvelle conversation si utilisateur connecté
+        if (this.getCurrentUserId() && !this.currentConversationId) {
+            await this.createNewConversation();
+        }
+        
+        try {
+            await this.showLoadingScreen();
+        } catch (error) {
+            console.error('Erreur:', error);
+            alert('Erreur lors de l\'initialisation');
+        }
+    }
+
+    // Configuration des événements de profil (mise à jour)
+    setupProfileEvents() {
+        // Boutons de connexion
+        const loginBtn = document.getElementById('login-button');
+        const headerLoginBtn = document.getElementById('header-login-button');
+        
+        if (loginBtn) {
+            loginBtn.addEventListener('click', () => {
+                window.location.href = 'login.html';
+            });
+        }
+
+        if (headerLoginBtn) {
+            headerLoginBtn.addEventListener('click', () => {
+                if (this.checkLoggedIn()) {
+                    this.showProfile();
+                } else {
+                    window.location.href = 'login.html';
+                }
+            });
+        }
+
+        // Mon Profil
+        const monProfil = document.getElementById('mon-profil');
+        if (monProfil) {
+            monProfil.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (this.checkLoggedIn()) {
+                    this.showProfile();
+                } else {
+                    alert('Veuillez vous connecter pour accéder à votre profil.');
+                    window.location.href = 'login.html';
+                }
+            });
+        }
+
+        // ⭐ NOUVEAU : Mes discussions avec dropdown
+        const mesDiscussions = document.getElementById('mes-discussions');
+        if (mesDiscussions) {
+            mesDiscussions.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (this.checkLoggedIn()) {
+                    this.showDiscussionsDropdown();
+                } else {
+                    alert('Veuillez vous connecter pour accéder à vos discussions.');
+                    window.location.href = 'login.html';
+                }
+            });
+        }
+
+        // ⭐ NOUVEAU : Bouton nouvelle discussion
+        const newDiscussionBtn = document.getElementById('discussions-new-btn');
+        if (newDiscussionBtn) {
+            newDiscussionBtn.addEventListener('click', async () => {
+                this.currentConversationId = null;
+                localStorage.removeItem('currentConversationId');
+                this.clearChatMessages();
+                this.messages = [];
+                this.hideDiscussionsDropdown();
+                
+                // Afficher le message de bienvenue
+                const welcomeMessage = this.getWelcomeMessage();
+                this.addMessage(welcomeMessage, 'bot');
+                
+                console.log('🆕 Nouvelle discussion initiée');
+            });
+        }
+
+        // Fermer le profil
+        const closeProfile = document.getElementById('close-profile');
+        const profileOverlay = document.getElementById('profile-overlay');
+        
+        if (closeProfile) {
+            closeProfile.addEventListener('click', () => {
+                if (profileOverlay) profileOverlay.style.display = 'none';
+            });
+        }
+
+        if (profileOverlay) {
+            profileOverlay.addEventListener('click', (e) => {
+                if (e.target === profileOverlay) {
+                    profileOverlay.style.display = 'none';
+                }
+            });
+        }
+
+        // Déconnexion
+        const logoutBtn = document.getElementById('logout-btn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', () => {
+                localStorage.removeItem('currentUser');
+                localStorage.removeItem('currentConversationId');
+                
+                if (profileOverlay) profileOverlay.style.display = 'none';
+                
+                const headerLoginText = document.getElementById('header-login-text');
+                if (headerLoginText) headerLoginText.textContent = 'Connexion';
+                
+                window.location.href = 'Ai-connexion.html';
+            });
+        }
+
+        // ⭐ NOUVEAU : Fermer dropdown discussions en cliquant ailleurs
+        document.addEventListener('click', (e) => {
+            const dropdown = document.getElementById('discussions-dropdown');
+            const mesDiscussionsBtn = document.getElementById('mes-discussions');
+            
+            if (dropdown && !dropdown.contains(e.target) && e.target !== mesDiscussionsBtn) {
+                dropdown.style.display = 'none';
+            }
+        });
+    }
+
+    // Fonction pour vérifier si l'utilisateur est connecté
+    checkLoggedIn() {
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        const isLoggedIn = currentUser && (currentUser.uid || currentUser.id);
+        
+        // Mettre à jour l'interface selon l'état de connexion
+        const headerLoginText = document.getElementById('header-login-text');
+        if (isLoggedIn && headerLoginText) {
+            headerLoginText.textContent = currentUser.firstname || 'Profil';
+            this.loadUserProfile();
+        }
+        
+        return isLoggedIn;
+    }
+
+    // Fonction pour charger le profil utilisateur
+    loadUserProfile() {
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        if (!currentUser) return;
+
+        const profileAvatar = document.getElementById('profile-avatar');
+        const profileName = document.getElementById('profile-name');
+        const profileEmail = document.getElementById('profile-email');
+        const profileFullname = document.getElementById('profile-fullname');
+        const profileBirthdate = document.getElementById('profile-birthdate');
+        const profileEmailInfo = document.getElementById('profile-email-info');
+        const profileRegistered = document.getElementById('profile-registered');
+
+        if (profileAvatar) profileAvatar.textContent = (currentUser.firstname?.charAt(0) || 'U').toUpperCase();
+        if (profileName) profileName.textContent = `${currentUser.firstname || ''} ${currentUser.lastname || ''}`.trim() || 'Utilisateur';
+        if (profileEmail) profileEmail.textContent = currentUser.email || '';
+        if (profileFullname) profileFullname.textContent = `${currentUser.firstname || ''} ${currentUser.lastname || ''}`.trim() || '-';
+        if (profileBirthdate) profileBirthdate.textContent = currentUser.birthdate ? new Date(currentUser.birthdate).toLocaleDateString("fr-FR") : '-';
+        if (profileEmailInfo) profileEmailInfo.textContent = currentUser.email || '-';
+        if (profileRegistered) profileRegistered.textContent = currentUser.registrationDate ? new Date(currentUser.registrationDate).toLocaleDateString("fr-FR") : '-';
+    }
+
+    // Animation du robot
+    animateRobot() {
+        const robot = document.getElementById('robot');
+        const speechBubble = document.getElementById('speech-bubble');
+        
+        if (!robot || !speechBubble) return;
+
+        const randomGreeting = this.greetings[Math.floor(Math.random() * this.greetings.length)];
+        speechBubble.textContent = randomGreeting;
+        speechBubble.classList.add('visible');
+
+        robot.style.animation = 'bounce 1s ease';
+        
+        setTimeout(() => {
+            robot.style.animation = 'shake 0.5s ease';
+            setTimeout(() => {
+                robot.style.animation = '';
+                setTimeout(() => {
+                    speechBubble.classList.remove('visible');
+                }, 3000);
+            }, 500);
+        }, 1000);
+    }
+
+    startRobotAnimation() {
+        setTimeout(() => this.animateRobot(), 1000);
+        this.animationInterval = setInterval(() => this.animateRobot(), 10000);
+    }
+
+    // Configuration des événements
+    setupEventListeners() {
+        // Bouton d'envoi principal
+        const sendBtn = document.getElementById('send-btn');
+        const subjectInput = document.getElementById('subject-input');
+        
+        if (sendBtn) {
+            sendBtn.addEventListener('click', () => this.handleInitialQuestion());
+        }
+
+        if (subjectInput) {
+            subjectInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') this.handleInitialQuestion();
+            });
+        }
+
+        // Boutons de chat
+        const chatSendBtn = document.getElementById('chat-send-btn');
+        const chatInput = document.getElementById('chat-input');
+        
+        if (chatSendBtn) {
+            chatSendBtn.addEventListener('click', () => this.handleChatMessage());
+        }
+
+        if (chatInput) {
+            chatInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') this.handleChatMessage();
+            });
+        }
+
+        // Questions rapides
+        const quickQuestions = document.querySelectorAll('.quick-question');
+        quickQuestions.forEach(question => {
+            question.addEventListener('click', () => {
+                this.sendQuickQuestion(question.textContent);
+            });
+        });
+
+        this.setupProfileEvents();
+    }
+
+    // Gestion des messages de chat
+    async handleChatMessage() {
+        const chatInput = document.getElementById('chat-input');
+        const input = chatInput?.value.trim();
+        
+        if (!input || this.isTyping) return;
+
+        chatInput.value = '';
+        this.addMessage(input, 'user');
+        
+        try {
+            await this.sendMessageToAI(input);
+        } catch (error) {
+            console.error('Erreur:', error);
+            this.addMessage("Désolé, une erreur s'est produite. Veuillez réessayer.", 'bot');
+        }
+    }
+
+    // Fonction de fallback
+    generateBotResponseFallback(question) {
+        const responses = {
+            "développeur": "Pour devenir développeur, je recommande de commencer par HTML/CSS, puis JavaScript, et choisir un framework comme React ou Vue.js. Souhaitez-vous des formations spécifiques ?",
+            "cybersécurité": "La cybersécurité est un domaine passionnant ! Je suggère de commencer par les fondamentaux de la sécurité réseau, puis approfondir avec des certifications comme CompTIA Security+.",
+            "débutant": "Parfait pour commencer ! Je recommande nos modules d'introduction qui couvrent les bases de l'informatique et de la programmation. Quel domaine vous intéresse le plus ?"
+        };
+
+        let response = "Je suis là pour vous aider à trouver les meilleures formations ! Pouvez-vous me dire plus précisément ce qui vous intéresse ?";
+        
+        const lowerQuestion = question.toLowerCase();
+        for (const [keyword, answer] of Object.entries(responses)) {
+            if (lowerQuestion.includes(keyword)) {
+                response = answer;
+                break;
+            }
+        }
+
+        setTimeout(() => {
+            this.addMessage(response, 'bot');
+        }, 1000);
+    }
+
+    // Fonction pour afficher l'écran de chargement
+    showLoadingScreen() {
+        const landingScreen = document.getElementById('landing-screen');
+        const loadingScreen = document.getElementById('loading-screen');
+        const homeLoginContainer = document.getElementById('home-login-container');
+        
+        if (landingScreen) landingScreen.style.display = 'none';
+        if (loadingScreen) loadingScreen.style.display = 'flex';
+        if (homeLoginContainer) homeLoginContainer.style.display = 'none';
+        
+        return new Promise((resolve) => {
+            let progress = 0;
+            const loadingMessages = [
+                "Connexion à l'intelligence artificielle...",
+                "Chargement des modules de formation...",
+                "Analyse de vos objectifs d'apprentissage...",
+                "Consultation de notre base de données...",
+                "Préparation de l'assistant FormationBot..."
+            ];
+            
+            const progressBar = document.getElementById('progress-bar');
+            const loadingMessage = document.getElementById('loading-message');
+            
+            const interval = setInterval(() => {
+                progress += 5;
+                if (progressBar) {
+                    progressBar.style.width = `${progress}%`;
+                    progressBar.textContent = `${progress}%`;
+                }
+                
+                if (progress % 20 === 0 && loadingMessage) {
+                    const messageIndex = (progress / 20) - 1;
+                    if (messageIndex < loadingMessages.length) {
+                        loadingMessage.textContent = loadingMessages[messageIndex];
+                    }
+                }
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        this.showChatInterface();
+                        resolve();
+                    }, 500);
+                }
+            }, 100);
+        });
+    }
+
+    // Fonction pour afficher l'interface de chat
+    showChatInterface() {
+        const loadingScreen = document.getElementById('loading-screen');
+        const chatInterface = document.getElementById('chat-interface');
+        const homeLoginContainer = document.getElementById('home-login-container');
+        
+        if (loadingScreen) loadingScreen.style.display = 'none';
+        if (chatInterface) chatInterface.style.display = 'flex';
+        if (homeLoginContainer) homeLoginContainer.style.display = 'none';
+        
+        // Supprimer le message statique existant
+        const existingMessage = document.querySelector('.chat-messages .message.bot-message');
+        if (existingMessage) {
+            existingMessage.remove();
+        }
+        
+        // Message de bienvenue personnalisé
+        const welcomeMessage = this.getWelcomeMessage();
+        this.addMessage(welcomeMessage, 'bot');
+        
+        // Traiter la question initiale avec l'IA
+        if (this.userQuestion) {
+            this.addMessage(this.userQuestion, 'user');
+            this.sendMessageToAI(this.userQuestion);
+        }
+    }
+
+    // Récupérer les recommandations
+    async fetchRecommendations(message) {
+        try {
+            console.log('📚 Recherche de recommandations...');
+            
+            let category = this.extractCategory(message);
+            let url = `${this.apiBaseUrl}/courses/search?limit=3`;
+            
+            if (category) {
+                url = `${this.apiBaseUrl}/courses/category/${encodeURIComponent(category)}?limit=3`;
+            }
+            
+            const response = await fetch(url, {
+                headers: {
+                    'Authorization': this.getAuthHeader()
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                console.log('✅ Recommandations reçues:', data);
+                
+                if (data.courses && data.courses.length > 0) {
+                    this.displayRecommendations(data.courses);
+                }
+            }
+        } catch (error) {
+            console.log('⚠️ Erreur recommandations:', error.message);
+        }
+    }
+
+    // Indicateur de frappe
+    showTypingIndicator() {
+        this.isTyping = true;
+        const chatMessages = document.getElementById('chat-messages');
+        
+        const typingDiv = document.createElement('div');
+        typingDiv.classList.add('message', 'bot-message', 'typing');
+        typingDiv.id = 'typing-indicator';
+        typingDiv.innerHTML = `
+            <div class="typing-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            FormationBot réfléchit...
+        `;
+        
+        chatMessages.appendChild(typingDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    hideTypingIndicator() {
+        this.isTyping = false;
+        const typingIndicator = document.getElementById('typing-indicator');
+        if (typingIndicator) {
+            typingIndicator.remove();
+        }
+    }
+
+    // Affichage des recommandations
+    displayRecommendations(recommendations) {
+        const chatMessages = document.getElementById('chat-messages');
+        
+        const recDiv = document.createElement('div');
+        recDiv.classList.add('message', 'bot-message', 'recommendations');
+        
+        let html = '<div class="recommendations-header">📚 Formations recommandées :</div>';
+        
+        recommendations.forEach((course) => {
+            html += `
+                <div class="recommendation-item" onclick="window.open('#', '_blank')">
+                    <div class="course-title">${course.title}</div>
+                    <div class="course-info">
+                        <span class="course-level">${course.level}</span>
+                        <span class="course-duration">${course.duration}h</span>
+                        <span class="course-rating">⭐ ${course.rating}</span>
+                    </div>
+                    <div class="course-description">${course.description.substring(0, 100)}...</div>
+                </div>
+            `;
+        });
+        
+        recDiv.innerHTML = html;
+        chatMessages.appendChild(recDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    // Fonction pour afficher le profil
+    showProfile() {
+        const profileOverlay = document.getElementById('profile-overlay');
+        if (profileOverlay) {
+            this.loadUserProfile();
+            profileOverlay.style.display = 'flex';
+        }
+    }
+
+    // Fonctions utilitaires
+   getCurrentUserId() {
+    const user = JSON.parse(localStorage.getItem('currentUser'));
+    const userId = user ? (user.uid || user.id) : null;
+    
+    console.log('👤 DEBUG UserId:', userId);
+    return userId;
+}
+    getAuthHeader() {
+    const user = JSON.parse(localStorage.getItem('currentUser'));
+    console.log('🔐 User complet:', user);
+    
+    //  différentes propriétés pour le token
+    const token = user?.accessToken || user?.token || user?.authToken || user?.idToken;
+    
+    console.log('🔐 Token trouvé:', !!token);
+    if (token) {
+        console.log('🔐 Type token:', typeof token);
+        console.log('🔐 Token début:', token.substring(0, 30) + '...');
+    }
+    
+    return token ? `Bearer ${token}` : '';
+}
+
+    getWelcomeMessage() {
+        const user = JSON.parse(localStorage.getItem('currentUser'));
+        const name = user?.firstname ? ` ${user.firstname}` : '';
+        
+        return `Bonjour${name} ! Je suis FormationBot, votre assistant d'orientation propulsé par intelligence artificielle. Je peux vous aider à trouver les modules de formation parfaitement adaptés à vos besoins. Quels sont vos objectifs d'apprentissage ?`;
+    }
+
+    shouldGenerateRecommendations(message) {
+        const keywords = ['cours', 'formation', 'module', 'apprendre', 'étudier', 'recommand', 'développeur', 'développement', 'cybersécurité', 'design'];
+        return keywords.some(keyword => message.toLowerCase().includes(keyword));
+    }
+
+    extractCategory(message) {
+        const categoryMap = {
+            'développement': 'Développement Web',
+            'développeur': 'Développement Web', 
+            'web': 'Développement Web',
+            'react': 'Développement Web',
+            'javascript': 'Développement Web',
+            'html': 'Développement Web',
+            'css': 'Développement Web',
+            'cybersécurité': 'Cybersécurité',
+            'sécurité': 'Cybersécurité',
+            'design': 'Design UX/UI',
+            'ux': 'Design UX/UI',
+            'ui': 'Design UX/UI'
+        };
+        
+        const lowerMessage = message.toLowerCase();
+        for (const [keyword, category] of Object.entries(categoryMap)) {
+            if (lowerMessage.includes(keyword)) {
+                return category;
+            }
+        }
+        return null;
+    }
+
+    sendQuickQuestion(questionText) {
+        this.addMessage(questionText, 'user');
+        this.sendMessageToAI(questionText);
+    }
+}
+
+// 🚀 Initialisation du ChatBot connecté
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('🤖 Initialisation du ChatBot connecté...');
+    window.chatBot = new ConnectedChatBot();
+    console.log('✅ ChatBot connecté au backend !');
+});
+    </script>
+</body>
+</html>

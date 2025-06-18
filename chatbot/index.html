@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Accueil - ChatBot IA</title>
+  <link rel="stylesheet" href="index.css">
+</head>
+<body>
+
+  <h1>Bienvenue sur le ChatBot IA pour l’E-learning</h1>
+
+  <div class="button-container">
+    <a id="main-btn" href="login.html" class="btn">Connexion</a>
+    <a href="register.html" class="btn">Inscription</a>
+  </div>
+
+  <div class="message" id="status-message"></div>
+
+  <script>
+    const user = JSON.parse(localStorage.getItem("currentUser"));
+    const mainBtn = document.getElementById("main-btn");
+    const message = document.getElementById("status-message");
+
+    if (user && user.id && user.email) {
+      mainBtn.textContent = "Entrer dans le Chatbot";
+      mainBtn.href = "Ai-connexion.html";
+      message.textContent = `Connecté en tant que ${user.email}`;
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,928 @@
+/* CSS Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        :root {
+            --primary-color: #1a73e8;
+            --primary-dark: #1558b3;
+            --text-color: #1f3a5f;
+            --text-secondary: #333;
+            --border-radius: 8px;
+            --shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-image: url('images/arrière plan2.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        
+        .container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px;
+        }
+        
+        h1 {
+            color: var(--text-color);
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 28px;
+        }
+        
+        .greeting {
+            margin-bottom: 20px;
+            font-size: 18px;
+            text-align: center;
+        }
+        
+        .input-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+        
+        input {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 80%;
+            font-size: 16px;
+        }
+        
+        button {
+            padding: 10px 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .info {
+            margin-bottom: 20px;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 16px;
+            max-width: 400px;
+        }
+        
+        .chatbot-container {
+            display: flex;
+            justify-content: flex-end;
+            position: relative;
+            width: 100%;
+            margin-top: 20px;
+        }
+        
+        .robot {
+            width: 150px;
+            height: auto;
+            position: relative;
+        }
+        
+        .speech-bubble {
+            position: absolute;
+            top: -30px;
+            right: 80px;
+            background-color: #f8f9fa;
+            padding: 12px 18px;
+            border-radius: 24px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 140px;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.7s, transform 0.5s;
+            border: 2px solid #2c7be5;
+            font-weight: 500;
+            color: #2c3e50;
+            transform: translateY(5px);
+        }
+        
+        .speech-bubble.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .speech-bubble:after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            right: 25px;
+            width: 20px;
+            height: 20px;
+            background-color: #f8f9fa;
+            border-right: 2px solid #2c7be5;
+            border-bottom: 2px solid #2c7be5;
+            transform: rotate(45deg);
+            box-shadow: 4px 4px 5px rgba(0, 0, 0, 0.05);
+        }
+        
+        /* Animation pour le robot */
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: rotate(0); }
+            25% { transform: rotate(5deg); }
+            75% { transform: rotate(-5deg); }
+        }
+        
+        /* Styles de l'écran de chargement */
+        .loading-screen {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .loading-title {
+            font-size: 24px;
+            margin-bottom: 30px;
+            color: var(--text-color);
+        }
+        
+        .progress-container {
+            width: 80%;
+            background-color: #f1f1f1;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 24px;
+            background-color: var(--primary-color);
+            border-radius: 20px;
+            width: 0%;
+            transition: width 0.5s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .loading-message {
+            font-size: 16px;
+            color: var(--text-secondary);
+        }
+        
+        /* Styles de l'interface de chat */
+        .chat-interface {
+            display: none;
+            flex-direction: column;
+            width: 100%;
+            height: 600px;
+        }
+        
+        .chat-header {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            background-color: #f2f7ff;
+            border-bottom: 1px solid #e1e5ea;
+            border-radius: 8px 8px 0 0;
+        }
+        
+        .bot-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 15px;
+        }
+        
+        .bot-info {
+            flex: 1;
+        }
+        
+        .bot-name {
+            font-weight: bold;
+            color: var(--text-color);
+            font-size: 18px;
+        }
+        
+        .bot-status {
+            font-size: 14px;
+            color: #5f6368;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            position: relative;
+        }
+        
+        .header-actions a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        
+        .header-login-button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 6px 15px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s ease;
+        }
+        
+        .header-login-button:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+        
+        .header-login-icon {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            background-color: white;
+            border-radius: 50%;
+            position: relative;
+            transition: transform 0.3s ease;
+        }
+        
+        .header-login-icon:after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 8px;
+            height: 8px;
+            margin-top: -5px;
+            margin-left: -1px;
+            border-top: 2px solid var(--primary-color);
+            border-right: 2px solid var(--primary-color);
+            transform: rotate(45deg);
+        }
+        
+        .header-login-button:hover .header-login-icon {
+            transform: rotate(360deg);
+        }
+        
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background-color: #f9fafc;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .message {
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            position: relative;
+            font-size: 15px;
+            line-height: 1.4;
+        }
+        
+        .user-message {
+            align-self: flex-end;
+            background-color: var(--primary-color);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+        
+        .bot-message {
+            align-self: flex-start;
+            background-color: #e9f0f8;
+            color: #2c3e50;
+            border-bottom-left-radius: 4px;
+        }
+        
+        .chat-input-container {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background-color: white;
+            border-top: 1px solid #e1e5ea;
+            border-radius: 0 0 8px 8px;
+        }
+        
+        .chat-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 1px solid #dde1e6;
+            border-radius: 24px;
+            font-size: 15px;
+            outline: none;
+        }
+        
+        .send-button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            margin-left: 10px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            transition: transform 0.3s ease;
+        }
+        
+        .send-button:hover {
+            transform: rotate(90deg);
+        }
+        
+        /* Style spécifique pour l'icône de flèche */
+        .send-arrow {
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-bottom: 14px solid white;
+            transform: translateY(-2px);
+            transition: transform 0.3s ease;
+        }
+        
+        .send-button:hover .send-arrow {
+            transform: translateY(-2px) rotate(90deg);
+        }
+        
+        .quick-questions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 15px;
+            border-top: 1px solid #e1e5ea;
+        }
+        
+        .quick-question {
+            background-color: #f2f7ff;
+            color: var(--primary-color);
+            border: 1px solid #d4e5ff;
+            border-radius: 16px;
+            padding: 8px 15px;
+            font-size: 14px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background-color 0.2s;
+        }
+        
+        /* Style pour le bouton de connexion */
+        .login-button-container {
+            position: absolute;
+            bottom: 15px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            z-index: 10;
+        }
+        
+        .login-button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 12px 25px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(26, 115, 232, 0.3);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .login-button:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.7s ease;
+            z-index: -1;
+        }
+        
+        .login-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(26, 115, 232, 0.4);
+            background-color: var(--primary-dark);
+        }
+        
+        .login-button:hover:before {
+            left: 100%;
+        }
+        
+        .login-icon {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            background-color: white;
+            border-radius: 50%;
+            position: relative;
+            transition: transform 0.3s ease;
+        }
+        
+        .login-icon:after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 10px;
+            height: 10px;
+            margin-top: -7px;
+            margin-left: -1px;
+            border-top: 2px solid var(--primary-color);
+            border-right: 2px solid var(--primary-color);
+            transform: rotate(45deg);
+        }
+        
+        .login-button:hover .login-icon {
+            transform: rotate(360deg);
+        }
+        
+        /* Style pour l'overlay du profil */
+        .profile-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .profile-card {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 25px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+        
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .profile-avatar {
+            width: 60px;
+            height: 60px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+        
+        .profile-title {
+            font-size: 22px;
+            color: var(--text-color);
+            margin-bottom: 5px;
+        }
+        
+        .profile-subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        
+        .profile-info {
+            margin-bottom: 20px;
+        }
+        
+        .profile-info-row {
+            display: flex;
+            margin-bottom: 10px;
+        }
+        
+        .profile-info-label {
+            width: 140px;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+        
+        .profile-info-value {
+            flex: 1;
+            color: var(--text-secondary);
+        }
+        
+        .close-profile {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 30px;
+            height: 30px;
+            background-color: rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .close-profile:hover {
+            background-color: rgba(0, 0, 0, 0.2);
+        }
+        
+        .close-icon {
+            position: relative;
+            width: 16px;
+            height: 16px;
+        }
+        
+        .close-icon:before, .close-icon:after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background-color: #333;
+            top: 50%;
+            left: 0;
+        }
+        
+        .close-icon:before {
+            transform: rotate(45deg);
+        }
+        
+        .close-icon:after {
+            transform: rotate(-45deg);
+        }
+        
+        .profile-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        .profile-action-btn {
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.2s;
+        }
+        
+        .logout-btn {
+            background-color: #f1f1f1;
+            color: #333;
+            border: none;
+        }
+        
+        .logout-btn:hover {
+            background-color: #e5e5e5;
+            transform: translateY(-2px);
+        }
+        
+        .edit-profile-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+        }
+        
+        .edit-profile-btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+        
+        /* Styles pour le menu déroulant des discussions */
+        .discussions-dropdown {
+            display: none;
+            position: absolute;
+            top: 60px;
+            right: 80px;
+            width: 300px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .discussions-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #e1e5ea;
+        }
+
+        .discussions-header h3 {
+            margin: 0;
+            font-size: 16px;
+            color: var(--text-color);
+        }
+
+        .discussions-new-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 6px 12px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .discussions-list {
+            padding: 0;
+        }
+
+        .discussion-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .discussion-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .discussion-title {
+            font-weight: 500;
+            font-size: 14px;
+            color: var(--text-color);
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .discussion-preview {
+            font-size: 12px;
+            color: #666;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .discussion-date {
+            font-size: 11px;
+            color: #999;
+            margin-top: 5px;
+        }
+        
+        /* Design responsive amélioré */
+        @media (max-width: 768px) {
+            .container {
+                padding: 25px;
+                width: 95%;
+                margin: 10px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            .greeting, .info {
+                font-size: 16px;
+            }
+            
+            input {
+                width: 70%;
+            }
+            
+            .robot {
+                width: 120px;
+            }
+            
+            .speech-bubble {
+                right: 60px;
+                width: 120px;
+                font-size: 14px;
+            }
+            
+            .chat-messages {
+                padding: 15px;
+            }
+            
+            .message {
+                max-width: 80%;
+                padding: 10px 14px;
+            }
+            
+            .quick-questions {
+                padding: 10px;
+                overflow-x: auto;
+                justify-content: flex-start;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .profile-card {
+                width: 95%;
+                padding: 20px;
+            }
+            
+            .profile-avatar {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+            
+            .profile-info-row {
+                flex-direction: column;
+                margin-bottom: 15px;
+            }
+            
+            .profile-info-label {
+                width: 100%;
+                margin-bottom: 3px;
+            }
+            
+            .discussions-dropdown {
+                right: 20px;
+                width: 280px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+                margin: 5px;
+                width: 98%;
+                max-height: 98vh;
+                overflow-y: auto;
+            }
+            
+            h1 {
+                font-size: 20px;
+            }
+            
+            .greeting, .info {
+                font-size: 14px;
+            }
+            
+            .input-container {
+                flex-direction: column;
+            }
+            
+            input {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+            
+            button {
+                width: 100%;
+            }
+            
+            .robot {
+                width: 100px;
+            }
+            
+            .speech-bubble {
+                right: 45px;
+                top: -25px;
+                width: 100px;
+                font-size: 12px;
+            }
+            
+            .header-actions {
+                display: none;
+            }
+            
+            .message {
+                max-width: 90%;
+            }
+            
+            .quick-question {
+                padding: 6px 12px;
+                font-size: 12px;
+                flex-shrink: 0;
+            }
+            
+            .chat-interface {
+                height: calc(100vh - 40px);
+            }
+            
+            .chat-messages {
+                max-height: 60vh;
+            }
+            
+            .discussions-dropdown {
+                right: 10px;
+                width: 250px;
+            }
+        }
+        
+        /* Animation d'impulsion pour le bouton de connexion */
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 4px 10px rgba(26, 115, 232, 0.3);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 6px 15px rgba(26, 115, 232, 0.5);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 4px 10px rgba(26, 115, 232, 0.3);
+            }
+        }
+        
+        .login-button.pulse {
+            animation: pulse 1s ease;
+        }
+/* Remove the </style> tag since this is a pure CSS file */
+.account-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+#account-toggle {
+  background-color: #1976d2;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#account-menu {
+  display: none;
+  position: absolute;
+  right: 0;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  z-index: 100;
+  margin-top: 5px;
+  min-width: 160px;
+}
+
+#account-menu button {
+  background: none;
+  border: none;
+  padding: 10px;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+}
+
+#account-menu button:hover {
+  background-color: #f0f0f0;
+}
+
+.hidden {
+  display: none;
+}
+
+
